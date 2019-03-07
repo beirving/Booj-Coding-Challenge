@@ -56,16 +56,24 @@ class BookController extends Controller
 
     public function update(int $id, Request $request)
     {
-        $this->validateBook($request);
-        $record = Book::findOrFail($id);
-        $record->update($request->all());
-        return response()->json($record);
+        try{
+            $this->validateBook($request);
+            $record = Book::findOrFail($id);
+            $record->update($request->all());
+            return response()->json($record);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json((array)$exception->getMessage(),404);
+        }
     }//end function
 
     public function destroy(int $id)
     {
-        Book::findOrFail($id)->delete();
-        return response('Deleted Successfully', 200);
+        try {
+            Book::findOrFail($id)->delete();
+            return response('Deleted Successfully', 200);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json((array)$exception->getMessage(),404);
+        }
     }//end function
 
     private function validateBook(Request $request)
